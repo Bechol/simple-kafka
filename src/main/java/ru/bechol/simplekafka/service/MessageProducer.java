@@ -14,10 +14,10 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class MessageProducer {
 
-	private final KafkaTemplate<Integer, String> kafkaTemplate;
+	private final KafkaTemplate<String, String> kafkaTemplate;
 	private final AppProperties appProperties;
 
-	public CompletableFuture<SendResult<Integer, String>> send(Integer key, String value) {
+	public CompletableFuture<SendResult<String, String>> send(String key, String value) {
 		log.info("Sending message to topic={}, key={}, value={}", appProperties.topic(), key, value);
 		return kafkaTemplate.send(appProperties.topic(), key, value)
 				.whenComplete((result, ex) -> {

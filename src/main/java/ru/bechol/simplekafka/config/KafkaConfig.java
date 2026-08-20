@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.IntegerDeserializer;
-import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -38,30 +36,30 @@ public class KafkaConfig {
 	}
 
 	@Bean
-	public ProducerFactory<Integer, String> producerFactory() {
+	public ProducerFactory<String, String> producerFactory() {
 		var props = kafkaProperties.buildProducerProperties();
-		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		return new DefaultKafkaProducerFactory<>(props);
 	}
 
 	@Bean
-	public KafkaTemplate<Integer, String> kafkaTemplate(ProducerFactory<Integer, String> producerFactory) {
+	public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
 		return new KafkaTemplate<>(producerFactory);
 	}
 
 	@Bean
-	public ConsumerFactory<Integer, String> consumerFactory() {
+	public ConsumerFactory<String, String> consumerFactory() {
 		var props = kafkaProperties.buildConsumerProperties();
-		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
+		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		return new DefaultKafkaConsumerFactory<>(props);
 	}
 
 	@Bean(name = MESSAGE_LISTENER_FACTORY)
-	public ConcurrentKafkaListenerContainerFactory<Integer, String> messageListenerFactory(
-			ConsumerFactory<Integer, String> consumerFactory) {
-		var factory = new ConcurrentKafkaListenerContainerFactory<Integer, String>();
+	public ConcurrentKafkaListenerContainerFactory<String, String> messageListenerFactory(
+			ConsumerFactory<String, String> consumerFactory) {
+		var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
 		factory.setConsumerFactory(consumerFactory);
 		factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
 		return factory;

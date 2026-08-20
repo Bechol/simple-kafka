@@ -15,7 +15,7 @@ public class MessageListener {
 			topics = "${app.kafka.topic}",
 			containerFactory = MESSAGE_LISTENER_FACTORY
 	)
-	public void onMessage(ConsumerRecord<Integer, String> record) {
+	public void onMessage(ConsumerRecord<String, String> record) {
 		log.info("Received message: topic={}, partition={}, offset={}, key={}, value={}",
 				record.topic(),
 				record.partition(),
