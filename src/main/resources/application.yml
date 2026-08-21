@@ -25,6 +25,18 @@ app:
     group-count: ${KAFKA_GROUP_COUNT:3}
     group-id-prefix: ${KAFKA_GROUP_ID_PREFIX:simple-kafka-group}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 logging:
   level:
     ru.bechol.simplekafka: DEBUG
