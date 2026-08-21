@@ -25,13 +25,11 @@ public class ConsumerController {
 
 	@PostMapping("/{groupId}/stop")
 	public ConsumerGroupStatus stop(@PathVariable String groupId) {
-		consumerGroupManager.stop(groupId);
-		return new ConsumerGroupStatus(groupId, false);
+		return consumerGroupManager.stop(groupId);
 	}
 
 	@PostMapping("/{groupId}/start")
 	public ConsumerGroupStatus start(@PathVariable String groupId) {
-		consumerGroupManager.start(groupId);
-		return new ConsumerGroupStatus(groupId, true);
+		return consumerGroupManager.start(groupId);
 	}
 }

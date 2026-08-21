@@ -1,6 +1,7 @@
 package ru.bechol.simplekafka.config;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -50,5 +51,10 @@ public class KafkaConfig {
 		factory.setConsumerFactory(consumerFactory);
 		factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
 		return factory;
+	}
+
+	@Bean(destroyMethod = "close")
+	public AdminClient adminClient() {
+		return AdminClient.create(kafkaProperties.buildAdminProperties(null));
 	}
 }

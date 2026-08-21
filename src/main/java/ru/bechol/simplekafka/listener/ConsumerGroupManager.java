@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import ru.bechol.simplekafka.config.AppProperties;
 import ru.bechol.simplekafka.dto.ConsumerGroupStatus;
+import ru.bechol.simplekafka.dto.PartitionOffset;
+import ru.bechol.simplekafka.service.ConsumerLagService;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ConsumerGroupManager implements ApplicationRunner {
 
 	private final ConcurrentKafkaListenerContainerFactory<String, String> messageListenerFactory;
 	private final AppProperties appProperties;
+	private final ConsumerLagService consumerLagService;
 	private final Map<String, ConcurrentMessageListenerContainer<String, String>> containers = new LinkedHashMap<>();
 
 	@Override
@@ -36,27 +39,40 @@ public class ConsumerGroupManager implements ApplicationRunner {
 	}
 
 	public List<ConsumerGroupStatus> list() {
-		return containers.entrySet().stream()
-				.map(entry -> new ConsumerGroupStatus(entry.getKey(), entry.getValue().isRunning()))
+		return containers.keySet().stream()
+				.map(this::status)
 				.toList();
 	}
 
-	public void stop(String groupId) {
+	public ConsumerGroupStatus status(String groupId) {
+		var container = requireContainer(groupId);
+		List<PartitionOffset> partitions = consumerLagService.offsetsForGroup(groupId);
+		long totalLag = partitions.stream()
+				.map(PartitionOffset::lag)
+				.filter(lag -> lag != null)
+				.mapToLong(Long::longValue)
+				.sum();
+		return new ConsumerGroupStatus(groupId, container.isRunning(), totalLag, partitions);
+	}
+
+	public ConsumerGroupStatus stop(String groupId) {
 		var container = requireContainer(groupId);
 		if (!container.isRunning()) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Consumer group already stopped: " + groupId);
 		}
 		container.stop();
 		log.info("Stopped consumer group={}", groupId);
+		return status(groupId);
 	}
 
-	public void start(String groupId) {
+	public ConsumerGroupStatus start(String groupId) {
 		var container = requireContainer(groupId);
 		if (container.isRunning()) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Consumer group already running: " + groupId);
 		}
 		container.start();
 		log.info("Started consumer group={}", groupId);
+		return status(groupId);
 	}
 
 	@PreDestroy
