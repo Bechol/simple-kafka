@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AppProperties(
 		String topic,
 		int groupCount,
-		String groupIdPrefix
+		String groupIdPrefix,
+		long metricsRefreshMs
 ) {
 }

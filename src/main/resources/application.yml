@@ -24,6 +24,7 @@ app:
     topic: ${KAFKA_TOPIC:simple-messages}
     group-count: ${KAFKA_GROUP_COUNT:3}
     group-id-prefix: ${KAFKA_GROUP_ID_PREFIX:simple-kafka-group}
+    metrics-refresh-ms: ${KAFKA_METRICS_REFRESH_MS:5000}
 
 management:
   endpoints:
