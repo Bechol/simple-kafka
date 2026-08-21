@@ -7,6 +7,7 @@ public record AppProperties(
 		String topic,
 		int groupCount,
 		String groupIdPrefix,
-		long metricsRefreshMs
+		long metricsRefreshMs,
+		String producerName
 ) {
 }

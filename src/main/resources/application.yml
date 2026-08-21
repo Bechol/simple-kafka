@@ -13,6 +13,10 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       acks: all
       retries: 3
+      properties:
+        max.block.ms: 5000
+        request.timeout.ms: 5000
+        delivery.timeout.ms: 10000
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -25,6 +29,9 @@ app:
     group-count: ${KAFKA_GROUP_COUNT:3}
     group-id-prefix: ${KAFKA_GROUP_ID_PREFIX:simple-kafka-group}
     metrics-refresh-ms: ${KAFKA_METRICS_REFRESH_MS:5000}
+    producer-name: ${KAFKA_PRODUCER_NAME:simple-kafka-producer}
+    producer-metrics-reset-cron: ${KAFKA_PRODUCER_METRICS_RESET_CRON:0 0 0 * * *}
+    producer-metrics-reset-zone: ${KAFKA_PRODUCER_METRICS_RESET_ZONE:Europe/Moscow}
 
 management:
   endpoints:
