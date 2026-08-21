@@ -1,7 +1,6 @@
 package ru.bechol.simplekafka.config;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -10,7 +9,6 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -22,18 +20,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 @RequiredArgsConstructor
 public class KafkaConfig {
 
-	public static final String MESSAGE_LISTENER_FACTORY = "messageListenerFactory";
-
 	private final KafkaProperties kafkaProperties;
-	private final AppProperties appProperties;
-
-	@Bean
-	public NewTopic messagesTopic() {
-		return TopicBuilder.name(appProperties.topic())
-				.partitions(1)
-				.replicas(1)
-				.build();
-	}
 
 	@Bean
 	public ProducerFactory<String, String> producerFactory() {
@@ -56,7 +43,7 @@ public class KafkaConfig {
 		return new DefaultKafkaConsumerFactory<>(props);
 	}
 
-	@Bean(name = MESSAGE_LISTENER_FACTORY)
+	@Bean
 	public ConcurrentKafkaListenerContainerFactory<String, String> messageListenerFactory(
 			ConsumerFactory<String, String> consumerFactory) {
 		var factory = new ConcurrentKafkaListenerContainerFactory<String, String>();
